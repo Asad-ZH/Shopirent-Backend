@@ -1,0 +1,8 @@
+package com.nerdware.deploymentdemo.controller;
+
+import org.springframework.stereotype.Controller;
+
+@Controller
+
+public class ReviewController {
+}
