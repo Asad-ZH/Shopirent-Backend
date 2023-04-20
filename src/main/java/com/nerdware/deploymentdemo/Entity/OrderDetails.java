@@ -47,13 +47,6 @@ public class OrderDetails {
     )
     private Product product;
 
-    @OneToOne(
-            mappedBy = "orderDetails",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE}
-    )
-    private Checkout checkout;
-
     private Integer quantity;
     private String paymentType;
     private Integer phoneNumber;

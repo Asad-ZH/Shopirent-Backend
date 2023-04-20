@@ -17,12 +17,11 @@ public class OrderDetailsService {
         this.orderDetailsRepository = orderDetailsRepository;
     }
 
-
     public OrderDetails getOrderDetails(Product product) {
         return orderDetailsRepository.findByProduct(product);
     }
 
-    public void deleteOrderDetails(Product product) {
-        orderDetailsRepository.deleteByProduct(product);
+    public void addOrderDetails(OrderDetails orderDetails) {
+        orderDetailsRepository.save(orderDetails);
     }
 }

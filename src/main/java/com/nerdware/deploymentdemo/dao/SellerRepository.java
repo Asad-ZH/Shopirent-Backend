@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface SellerRepository extends JpaRepository<Seller, Long> {
 
-
+    Seller getById(Long sellerId);
 }
