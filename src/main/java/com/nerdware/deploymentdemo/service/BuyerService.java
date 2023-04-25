@@ -30,7 +30,6 @@ public class BuyerService {
         buyerRepository.save(buyer);
     }
 
-//editable
     public void updateBuyer(Buyer buyer, Long id) {
         buyerRepository.findById(buyer.getId())
                 .ifPresent(user1 -> {
