@@ -1,15 +1,30 @@
 package com.nerdware.deploymentdemo.Entity;
 
-import lombok.Data;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
 @Table(name = "buyer")
-public class Buyer {
+@Setter
+@Getter
+@NoArgsConstructor
+public class Buyer implements UserDetails {
 
     @Id
     @SequenceGenerator(
@@ -22,7 +37,6 @@ public class Buyer {
             generator = "favourites_sequence"
     )
     private Long id;
-
     @OneToOne(
             mappedBy = "buyer",
             cascade = CascadeType.ALL,
@@ -45,81 +59,71 @@ public class Buyer {
     private String firstName;
     private String lastName;
     private String email;
-    private String password;
     private Integer phone;
 
-    public Buyer() {
+    private String username;
+    private String password;
+
+    @Lob
+    @Column(name = "granted_authorities", columnDefinition = "text")
+    private String grantedAuthorities;
+
+    private  boolean isAccountNonExpired;
+    private  boolean isAccountNonLocked;
+    private  boolean isCredentialsNonExpired;
+    private  boolean isEnabled;
+
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+
+        if (grantedAuthorities == null) {
+            return Collections.emptySet();
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            return mapper.readValue(grantedAuthorities, new TypeReference<Set<SimpleGrantedAuthority>>() {});
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to deserialize granted authorities", e);
+        }
     }
 
-    public Buyer(String firstName, String lastName, String email, String password, Integer phone) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.password = password;
-        this.phone = phone;
+    public void setGrantedAuthorities(Set<SimpleGrantedAuthority> grantedAuthorities) {
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            this.grantedAuthorities = mapper.writeValueAsString(grantedAuthorities);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to serialize granted authorities", e);
+        }
     }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public List<OrderDetails> getOrderDetails() {
-        return orderDetails;
-    }
-
-    public void setOrderDetails(List<OrderDetails> orderDetails) {
-        this.orderDetails = orderDetails;
-    }
-
-    public List<Review> getBuyerReviews() {
-        return BuyerReviews;
-    }
-
-    public void setBuyerReviews(List<Review> buyerReviews) {
-        BuyerReviews = buyerReviews;
-    }
-
-    public String getFirstName() {
-        return firstName;
-    }
-
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public void setEmail(String email) {
-        this.email = email;
-    }
-
+    @Override
     public String getPassword() {
         return password;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    @Override
+    public String getUsername() {
+        return username;
     }
 
-    public Integer getPhone() {
-        return phone;
+    @Override
+    public boolean isAccountNonExpired() {
+        return isAccountNonExpired;
     }
 
-    public void setPhone(Integer phone) {
-        this.phone = phone;
+    @Override
+    public boolean isAccountNonLocked() {
+        return isAccountNonLocked;
     }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return isCredentialsNonExpired;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
 }

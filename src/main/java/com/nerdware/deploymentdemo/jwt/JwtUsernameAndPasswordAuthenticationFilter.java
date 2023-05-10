@@ -1,13 +1,18 @@
 package com.nerdware.deploymentdemo.jwt;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.nerdware.deploymentdemo.Entity.Buyer;
+import com.nerdware.deploymentdemo.Entity.Seller;
 import io.jsonwebtoken.Jwts;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -19,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.Arrays;
 import java.util.Date;
 
 public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -34,6 +40,12 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         this.jwtConfig = jwtConfig;
         this.secretKey = secretKey;
     }
+
+
+
+
+
+
 
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request,
