@@ -22,7 +22,7 @@ public class BuyerController {
     }
 
     @GetMapping
-    @PreAuthorize("hasAnyRole( 'ROLE_BUYER')")
+//    @PreAuthorize("hasAnyRole( 'ROLE_BUYER')")
     public List<Buyer> getAllBuyers() {
         return buyerService.getAllBuyers();
     }

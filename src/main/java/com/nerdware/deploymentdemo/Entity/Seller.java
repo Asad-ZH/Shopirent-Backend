@@ -43,11 +43,7 @@ public class Seller {
     private String phone;
     private String address;
     private String city;
-    private String province;
     private String country;
     private String zipCode;
 
-
-    public void setFirstName() {
-    }
 }
