@@ -6,8 +6,10 @@ import com.nerdware.deploymentdemo.dto.LoginDto;
 import com.nerdware.deploymentdemo.dto.RegisterDto;
 import com.nerdware.deploymentdemo.models.Role;
 import com.nerdware.deploymentdemo.models.UserEntity;
+import com.nerdware.deploymentdemo.models.UserEntity2;
 import com.nerdware.deploymentdemo.repository.RoleRepository;
 import com.nerdware.deploymentdemo.repository.UserRepository;
+import com.nerdware.deploymentdemo.repository.UserRepository2;
 import com.nerdware.deploymentdemo.security.JWTGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,6 +32,8 @@ public class AuthController {
 
     private AuthenticationManager authenticationManager;
     private UserRepository userRepository;
+    private UserRepository2 userRepository2;
+
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
     private JWTGenerator jwtGenerator;
@@ -37,11 +41,13 @@ public class AuthController {
     @Autowired
     public AuthController(AuthenticationManager authenticationManager,
                           UserRepository userRepository,
+                          UserRepository2 userRepository2,
                           RoleRepository roleRepository,
                           PasswordEncoder passwordEncoder,
                           JWTGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
         this.userRepository = userRepository;
+        this.userRepository2 = userRepository2;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
@@ -60,6 +66,7 @@ public class AuthController {
 
     @PostMapping("register")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+
         if (userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
@@ -74,5 +81,23 @@ public class AuthController {
         userRepository.save(user);
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
+    }
+    @PostMapping("register2")
+    public ResponseEntity<String> register2(@RequestBody RegisterDto registerDto) {
+
+        if (userRepository2.existsByUsername(registerDto.getUsername())) {
+            return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
+        }
+
+        UserEntity2 user2 = new UserEntity2();
+        user2.setUsername(registerDto.getUsername());
+        user2.setPassword(passwordEncoder.encode((registerDto.getPassword())));
+
+        Role roles = roleRepository.findByName("BUYER").get();
+        user2.setRoles(Collections.singletonList(roles));
+
+        userRepository2.save(user2);
+
+        return new ResponseEntity<>("User2 registered success!", HttpStatus.OK);
     }
 }
