@@ -8,12 +8,12 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestingWorld {
 
     @GetMapping("/seller")
-    @PreAuthorize("hasRole('SELLER')")
+    @PreAuthorize("hasAuthority('UserEntity2')")
     public String helloWorld(){
         return "Hello";
     }
     @GetMapping("/buyer")
-    @PreAuthorize("hasRole('BUYER')")
+    @PreAuthorize("hasAuthority('UserEntity')")
     public String helloWorld2(){
         return " World";
     }
