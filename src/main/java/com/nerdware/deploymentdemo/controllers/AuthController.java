@@ -19,11 +19,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
 @RestController
@@ -52,6 +52,7 @@ public class AuthController {
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
     }
+
 
     @PostMapping("login")
     public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginDto loginDto){
@@ -100,4 +101,21 @@ public class AuthController {
 
         return new ResponseEntity<>("User2 registered success!", HttpStatus.OK);
     }
+    @PostMapping("logout")
+    public ResponseEntity<?> logout(HttpServletRequest request) {
+        // Retrieve the JWT token from the Authorization header
+        String header = request.getHeader("Authorization");
+        if (header != null && header.startsWith("Bearer ")) {
+            System.out.println("logout1 successfullylogout1 successfullylogout1 successfullylogout1 successfullylogout1 successfully");
+
+            String token = header.substring(7);
+            // Invalidate the JWT token by adding it to a blacklist
+            JwtTokenBlacklist.add(token);
+        }
+
+        System.out.println("logout successfully");
+        // Return a response indicating that the user has been logged out
+        return new ResponseEntity<>("logout successfully!", HttpStatus.OK);
+    }
+
 }

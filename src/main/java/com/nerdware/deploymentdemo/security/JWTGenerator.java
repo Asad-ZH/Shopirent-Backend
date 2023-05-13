@@ -1,6 +1,7 @@
 package com.nerdware.deploymentdemo.security;
 
 
+import com.nerdware.deploymentdemo.controllers.JwtTokenBlacklist;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -36,7 +37,10 @@ public class JWTGenerator {
     }
 
     public boolean validateToken(String token) {
-        try {
+            if (JwtTokenBlacklist.contains(token)) {
+                return false;
+            }
+            try {
             Jwts.parser().setSigningKey(SecurityConstants.JWT_SECRET).parseClaimsJws(token);
             return true;
         } catch (Exception ex) {
