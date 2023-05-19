@@ -24,4 +24,8 @@ public class UserEntity2 {
     @JoinTable(name = "user2_roles", joinColumns = @JoinColumn(name = "user2_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
+
+    public int getId() {
+        return id;
+    }
 }

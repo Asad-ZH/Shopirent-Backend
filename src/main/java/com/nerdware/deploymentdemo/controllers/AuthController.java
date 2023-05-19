@@ -19,15 +19,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 
 @RestController
 @RequestMapping("/api/auth")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class AuthController {
 
     private AuthenticationManager authenticationManager;
@@ -62,13 +61,25 @@ public class AuthController {
                         loginDto.getPassword()));
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
-        return new ResponseEntity<>(new AuthResponseDTO(token, loginDto.getUsername()), HttpStatus.OK);
+
+        UserEntity user = userRepository.findByUsername(loginDto.getUsername());
+
+        if(user==null){
+            UserEntity2 user2 = userRepository2.findByUsername(loginDto.getUsername());
+            AuthResponseDTO authResponseDTO = new AuthResponseDTO(token, loginDto.getUsername(), user2.getId(), "BUYER");
+            return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
+        }
+
+        AuthResponseDTO authResponseDTO = new AuthResponseDTO(token, loginDto.getUsername(), user.getId(),"SELLER");
+
+        return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
+
     }
 
-    @PostMapping("register")
+    @PostMapping("registerseller")
     public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
 
-        if (userRepository.existsByUsername(registerDto.getUsername())) {
+        if (userRepository.existsByUsername(registerDto.getUsername()) && userRepository2.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
@@ -83,10 +94,11 @@ public class AuthController {
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
-    @PostMapping("register2")
+
+    @PostMapping("registerbuyer")
     public ResponseEntity<String> register2(@RequestBody RegisterDto registerDto) {
 
-        if (userRepository2.existsByUsername(registerDto.getUsername())) {
+        if (userRepository2.existsByUsername(registerDto.getUsername()) && userRepository.existsByUsername(registerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
@@ -103,18 +115,14 @@ public class AuthController {
     }
     @PostMapping("logout")
     public ResponseEntity<?> logout(HttpServletRequest request) {
-        // Retrieve the JWT token from the Authorization header
-        String header = request.getHeader("Authorization");
-        if (header != null && header.startsWith("Bearer ")) {
-            System.out.println("logout1 successfullylogout1 successfullylogout1 successfullylogout1 successfullylogout1 successfully");
 
+        String header = request.getHeader("Authorization");
+
+        if (header != null && header.startsWith("Bearer ")) {
             String token = header.substring(7);
-            // Invalidate the JWT token by adding it to a blacklist
             JwtTokenBlacklist.add(token);
         }
 
-        System.out.println("logout successfully");
-        // Return a response indicating that the user has been logged out
         return new ResponseEntity<>("logout successfully!", HttpStatus.OK);
     }
 
