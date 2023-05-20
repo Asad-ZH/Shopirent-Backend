@@ -3,7 +3,8 @@ package com.nerdware.deploymentdemo.controllers;
 
 import com.nerdware.deploymentdemo.dto.AuthResponseDTO;
 import com.nerdware.deploymentdemo.dto.LoginDto;
-import com.nerdware.deploymentdemo.dto.RegisterDto;
+import com.nerdware.deploymentdemo.dto.RegisterBuyerDto;
+import com.nerdware.deploymentdemo.dto.RegisterSellerDto;
 import com.nerdware.deploymentdemo.models.Role;
 import com.nerdware.deploymentdemo.models.UserEntity;
 import com.nerdware.deploymentdemo.models.UserEntity2;
@@ -77,15 +78,22 @@ public class AuthController {
     }
 
     @PostMapping("registerseller")
-    public ResponseEntity<String> register(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<String> register(@RequestBody RegisterSellerDto registerSellerDto) {
 
-        if (userRepository.existsByUsername(registerDto.getUsername()) && userRepository2.existsByUsername(registerDto.getUsername())) {
+        if (userRepository.existsByUsername(registerSellerDto.getUsername()) || userRepository2.existsByUsername(registerSellerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
         UserEntity user = new UserEntity();
-        user.setUsername(registerDto.getUsername());
-        user.setPassword(passwordEncoder.encode((registerDto.getPassword())));
+        user.setUsername(registerSellerDto.getUsername());
+        user.setPassword(passwordEncoder.encode((registerSellerDto.getPassword())));
+        user.setName(registerSellerDto.getName());
+        user.setPhone(registerSellerDto.getPhone());
+        user.setAddress(registerSellerDto.getAddress());
+        user.setCity(registerSellerDto.getCity());
+        user.setStoreName(registerSellerDto.getStoreName());
+        user.setZipCode(registerSellerDto.getZipCode());
+
 
         Role roles = roleRepository.findByName("SELLER").get();
         user.setRoles(Collections.singletonList(roles));
@@ -96,15 +104,15 @@ public class AuthController {
     }
 
     @PostMapping("registerbuyer")
-    public ResponseEntity<String> register2(@RequestBody RegisterDto registerDto) {
+    public ResponseEntity<String> register2(@RequestBody RegisterBuyerDto registerBuyerDto) {
 
-        if (userRepository2.existsByUsername(registerDto.getUsername()) && userRepository.existsByUsername(registerDto.getUsername())) {
+        if (userRepository2.existsByUsername(registerBuyerDto.getUsername()) || userRepository.existsByUsername(registerBuyerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
         UserEntity2 user2 = new UserEntity2();
-        user2.setUsername(registerDto.getUsername());
-        user2.setPassword(passwordEncoder.encode((registerDto.getPassword())));
+        user2.setUsername(registerBuyerDto.getUsername());
+        user2.setPassword(passwordEncoder.encode((registerBuyerDto.getPassword())));
 
         Role roles = roleRepository.findByName("BUYER").get();
         user2.setRoles(Collections.singletonList(roles));

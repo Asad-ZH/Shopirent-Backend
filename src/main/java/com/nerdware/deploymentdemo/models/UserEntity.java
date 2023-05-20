@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "users")
+@Table(name = "seller")
 @Data
 @NoArgsConstructor
 public class UserEntity {
@@ -18,11 +18,18 @@ public class UserEntity {
     private int id;
 
     private String username;
-
     private String password;
 
+    private String name;
+    private String storeName;
+    private String phone;
+    private String address;
+    private String city;
+    private String country;
+    private String zipCode;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"),
+    @JoinTable(name = "seller_roles", joinColumns = @JoinColumn(name = "seller_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
 
