@@ -30,7 +30,6 @@ public class Seller {
 
     @OneToMany(
             mappedBy = "seller",
-            fetch = FetchType.LAZY,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             orphanRemoval = true
     )

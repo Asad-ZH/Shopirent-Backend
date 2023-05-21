@@ -1,5 +1,6 @@
 package com.nerdware.deploymentdemo.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import org.hibernate.annotations.Type;
 import org.springframework.lang.Nullable;
@@ -26,18 +27,17 @@ public class Product {
     @Id
     private Long Id;
 
+    @JsonIgnore
     @ManyToOne(
             fetch = FetchType.LAZY
     )
     @JoinColumn(
-            name = "student_id",
-            nullable = false,
+            name = "seller_id",
             referencedColumnName = "id",
             foreignKey = @ForeignKey(
                     name = "seller_product_fk"
             )
     )
-    @Nullable
     private Seller seller;
 
 //    @OneToMany(
