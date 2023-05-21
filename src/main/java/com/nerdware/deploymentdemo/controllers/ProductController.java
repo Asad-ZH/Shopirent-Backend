@@ -39,9 +39,10 @@ public class ProductController {
         System.out.println("Product: " + product);
         productService.addProductToSeller(product);
     }
+
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('Seller')")
-    public void updateProduct(@RequestBody Product product, @RequestParam Long id) {
+    public void updateProduct(@RequestBody Product product, @PathVariable Long id) throws Exception {
         productService.updateProduct(product, id);
     }
 

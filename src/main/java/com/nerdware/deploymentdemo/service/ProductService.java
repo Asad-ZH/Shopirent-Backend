@@ -8,12 +8,16 @@ import com.nerdware.deploymentdemo.repository.ProductRepository;
 import com.nerdware.deploymentdemo.repository.SellerRepository;
 import com.nerdware.deploymentdemo.security.JWTAuthenticationFilter;
 import com.nerdware.deploymentdemo.security.JWTGenerator;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ProductService {
@@ -46,11 +50,26 @@ public class ProductService {
         return seller.getProducts();
     }
 
-    public void updateProduct(Product product, Long id) {
-        productRepository.findById(product.getId())
-                .ifPresent(product1 -> {
-                    productRepository.save(product);
-                });
+    public void updateProduct(Product updatedProduct, Long id) throws Exception{
+        Seller seller = extractSellerIdFromToken();
+
+        // Retrieve the existing product from the database
+        Product existingProduct = productRepository.findById(id).orElseThrow();
+
+        // Check if the product exists
+        if (existingProduct == null) {
+            throw new ChangeSetPersister.NotFoundException();
+        }
+        if (!(existingProduct.getSeller().getId() == seller.getId())){
+            throw new IllegalStateException("Seller is not authenticated");
+        }
+
+        // Copy the properties from the updatedProduct to the existingProduct
+        long temp = existingProduct.getId();
+        BeanUtils.copyProperties(updatedProduct, existingProduct);
+        existingProduct.setId(temp);
+
+        productRepository.save(existingProduct);
     }
 
     public void deleteProduct(Long id) {
