@@ -63,6 +63,8 @@ public class ProductService {
         if (!(existingProduct.getSeller().getId() == seller.getId())){
             throw new IllegalStateException("Seller is not authenticated");
         }
+        System.out.println("product seller id 1"+existingProduct.getSeller().getId());
+        System.out.println(seller.getId());
 
         // Copy the properties from the updatedProduct to the existingProduct
         long temp = existingProduct.getId();
@@ -73,9 +75,16 @@ public class ProductService {
     }
 
     public void deleteProduct(Long id) {
-        boolean exists = productRepository.existsById(id);
-        if (!exists) {
-            throw new IllegalStateException("Product with id " + id + " does not exist");
+        Seller seller = extractSellerIdFromToken();
+
+        Product existingProduct = productRepository.findById(id).orElseThrow();
+
+        if (existingProduct == null) {
+            throw new IllegalStateException("Product not found");
+
+        }
+        if (!(existingProduct.getSeller().getId() == seller.getId())){
+            throw new IllegalStateException("Seller is not authenticated");
         }
         productRepository.deleteById(id);
     }

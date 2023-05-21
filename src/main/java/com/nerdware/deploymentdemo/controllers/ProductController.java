@@ -21,34 +21,34 @@ public class ProductController {
         this.productService = productService;
     }
 
-    @GetMapping
+    @GetMapping("/all-products")
     @PreAuthorize("hasAnyAuthority('Buyer','Seller')")
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
 
-    @GetMapping("/sellerproducts")
+    @GetMapping("/seller-products")
     @PreAuthorize("hasAnyAuthority('Buyer','Seller')")
     public List<Product> getAllSellerProducts() {
         return productService.getAllSellerProducts();
     }
 
-    @PostMapping("/")
+    @PostMapping("/add-products")
     @PreAuthorize("hasAuthority('Seller')")
     public void addProduct(@RequestBody Product product) {
         System.out.println("Product: " + product);
         productService.addProductToSeller(product);
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update-products/{id}")
     @PreAuthorize("hasAuthority('Seller')")
     public void updateProduct(@RequestBody Product product, @PathVariable Long id) throws Exception {
         productService.updateProduct(product, id);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete-products/{id}")
     @PreAuthorize("hasAuthority('Seller')")
-    public void deleteProduct(@RequestParam Long id) {
+    public void deleteProduct(@PathVariable Long id) {
         productService.deleteProduct(id);
     }
 
