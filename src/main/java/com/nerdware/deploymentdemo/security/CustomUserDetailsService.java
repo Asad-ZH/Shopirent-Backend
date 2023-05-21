@@ -1,10 +1,10 @@
 package com.nerdware.deploymentdemo.security;
 
 import com.nerdware.deploymentdemo.models.Role;
-import com.nerdware.deploymentdemo.models.UserEntity;
-import com.nerdware.deploymentdemo.models.UserEntity2;
-import com.nerdware.deploymentdemo.repository.UserRepository;
-import com.nerdware.deploymentdemo.repository.UserRepository2;
+import com.nerdware.deploymentdemo.models.Seller;
+import com.nerdware.deploymentdemo.models.Buyer;
+import com.nerdware.deploymentdemo.repository.SellerRepository;
+import com.nerdware.deploymentdemo.repository.BuyerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -14,7 +14,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,25 +21,25 @@ import java.util.stream.Collectors;
 @Service
 public class CustomUserDetailsService  implements UserDetailsService {
 
-    private UserRepository userRepository;
-    private UserRepository2 userRepository2;
+    private SellerRepository sellerRepository;
+    private BuyerRepository buyerRepository;
 
     @Autowired
-    public CustomUserDetailsService(UserRepository userRepository, UserRepository2 userRepository2) {
-        this.userRepository = userRepository;
-        this.userRepository2 = userRepository2;
+    public CustomUserDetailsService(SellerRepository sellerRepository, BuyerRepository buyerRepository) {
+        this.sellerRepository = sellerRepository;
+        this.buyerRepository = buyerRepository;
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        if (userRepository2.existsByUsername(username)) {
-            UserEntity2 user2 = userRepository2.findByUsername(username);
+        if (buyerRepository.existsByUsername(username)) {
+            Buyer user2 = buyerRepository.findByUsername(username);
             return new User(user2.getUsername(), user2.getPassword(), mapRolesToAuthorities(user2.getRoles()));
         }
 
-        else if(userRepository.existsByUsername(username)) {
-            UserEntity user = userRepository.findByUsername(username);
+        else if(sellerRepository.existsByUsername(username)) {
+            Seller user = sellerRepository.findByUsername(username);
             return new User(user.getUsername(), user.getPassword(), mapRolesToAuthorities(user.getRoles()));
         }
         else {

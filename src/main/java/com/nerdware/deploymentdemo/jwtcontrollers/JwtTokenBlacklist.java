@@ -1,4 +1,4 @@
-package com.nerdware.deploymentdemo.controllers;
+package com.nerdware.deploymentdemo.jwtcontrollers;
 
 import java.util.Set;
 import java.util.HashSet;

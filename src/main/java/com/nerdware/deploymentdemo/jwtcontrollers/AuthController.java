@@ -1,4 +1,4 @@
-package com.nerdware.deploymentdemo.controllers;
+package com.nerdware.deploymentdemo.jwtcontrollers;
 
 
 import com.nerdware.deploymentdemo.dto.AuthResponseDTO;
@@ -6,11 +6,11 @@ import com.nerdware.deploymentdemo.dto.LoginDto;
 import com.nerdware.deploymentdemo.dto.RegisterBuyerDto;
 import com.nerdware.deploymentdemo.dto.RegisterSellerDto;
 import com.nerdware.deploymentdemo.models.Role;
-import com.nerdware.deploymentdemo.models.UserEntity;
-import com.nerdware.deploymentdemo.models.UserEntity2;
+import com.nerdware.deploymentdemo.models.Seller;
+import com.nerdware.deploymentdemo.models.Buyer;
 import com.nerdware.deploymentdemo.repository.RoleRepository;
-import com.nerdware.deploymentdemo.repository.UserRepository;
-import com.nerdware.deploymentdemo.repository.UserRepository2;
+import com.nerdware.deploymentdemo.repository.SellerRepository;
+import com.nerdware.deploymentdemo.repository.BuyerRepository;
 import com.nerdware.deploymentdemo.security.JWTGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,8 +31,8 @@ import java.util.Collections;
 public class AuthController {
 
     private AuthenticationManager authenticationManager;
-    private UserRepository userRepository;
-    private UserRepository2 userRepository2;
+    private SellerRepository sellerRepository;
+    private BuyerRepository buyerRepository;
 
     private RoleRepository roleRepository;
     private PasswordEncoder passwordEncoder;
@@ -40,14 +40,14 @@ public class AuthController {
 
     @Autowired
     public AuthController(AuthenticationManager authenticationManager,
-                          UserRepository userRepository,
-                          UserRepository2 userRepository2,
+                          SellerRepository sellerRepository,
+                          BuyerRepository buyerRepository,
                           RoleRepository roleRepository,
                           PasswordEncoder passwordEncoder,
                           JWTGenerator jwtGenerator) {
         this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.userRepository2 = userRepository2;
+        this.sellerRepository = sellerRepository;
+        this.buyerRepository = buyerRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.jwtGenerator = jwtGenerator;
@@ -63,10 +63,10 @@ public class AuthController {
         SecurityContextHolder.getContext().setAuthentication(authentication);
         String token = jwtGenerator.generateToken(authentication);
 
-        UserEntity user = userRepository.findByUsername(loginDto.getUsername());
+        Seller user = sellerRepository.findByUsername(loginDto.getUsername());
 
         if(user==null){
-            UserEntity2 user2 = userRepository2.findByUsername(loginDto.getUsername());
+            Buyer user2 = buyerRepository.findByUsername(loginDto.getUsername());
             AuthResponseDTO authResponseDTO = new AuthResponseDTO(token, loginDto.getUsername(), user2.getId(), "BUYER");
             return new ResponseEntity<>(authResponseDTO, HttpStatus.OK);
         }
@@ -80,11 +80,11 @@ public class AuthController {
     @PostMapping("registerseller")
     public ResponseEntity<String> register(@RequestBody RegisterSellerDto registerSellerDto) {
 
-        if (userRepository.existsByUsername(registerSellerDto.getUsername()) || userRepository2.existsByUsername(registerSellerDto.getUsername())) {
+        if (sellerRepository.existsByUsername(registerSellerDto.getUsername()) || buyerRepository.existsByUsername(registerSellerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
-        UserEntity user = new UserEntity();
+        Seller user = new Seller();
         user.setUsername(registerSellerDto.getUsername());
         user.setPassword(passwordEncoder.encode((registerSellerDto.getPassword())));
         user.setName(registerSellerDto.getName());
@@ -98,7 +98,7 @@ public class AuthController {
         Role roles = roleRepository.findByName("SELLER").get();
         user.setRoles(Collections.singletonList(roles));
 
-        userRepository.save(user);
+        sellerRepository.save(user);
 
         return new ResponseEntity<>("User registered success!", HttpStatus.OK);
     }
@@ -106,18 +106,18 @@ public class AuthController {
     @PostMapping("registerbuyer")
     public ResponseEntity<String> register2(@RequestBody RegisterBuyerDto registerBuyerDto) {
 
-        if (userRepository2.existsByUsername(registerBuyerDto.getUsername()) || userRepository.existsByUsername(registerBuyerDto.getUsername())) {
+        if (buyerRepository.existsByUsername(registerBuyerDto.getUsername()) || sellerRepository.existsByUsername(registerBuyerDto.getUsername())) {
             return new ResponseEntity<>("Username is taken!", HttpStatus.BAD_REQUEST);
         }
 
-        UserEntity2 user2 = new UserEntity2();
+        Buyer user2 = new Buyer();
         user2.setUsername(registerBuyerDto.getUsername());
         user2.setPassword(passwordEncoder.encode((registerBuyerDto.getPassword())));
 
         Role roles = roleRepository.findByName("BUYER").get();
         user2.setRoles(Collections.singletonList(roles));
 
-        userRepository2.save(user2);
+        buyerRepository.save(user2);
 
         return new ResponseEntity<>("User2 registered success!", HttpStatus.OK);
     }

@@ -1,7 +1,7 @@
 package com.nerdware.deploymentdemo.security;
 
 
-import com.nerdware.deploymentdemo.controllers.JwtTokenBlacklist;
+import com.nerdware.deploymentdemo.jwtcontrollers.JwtTokenBlacklist;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

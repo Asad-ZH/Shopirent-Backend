@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(name = "buyer")
+@Table(name = "seller")
 @Data
 @NoArgsConstructor
-public class UserEntity2 {
+public class Seller {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,12 +21,24 @@ public class UserEntity2 {
     private String password;
 
     private String name;
-    private Integer phone;
+    private String storeName;
+    private String phone;
     private String address;
+    private String city;
+    private String country;
+    private String zipCode;
+
+    @OneToMany(
+            mappedBy = "seller",
+            fetch = FetchType.LAZY,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            orphanRemoval = true
+    )
+    private List<Product> products = new ArrayList<>();
 
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinTable(name = "buyer_roles", joinColumns = @JoinColumn(name = "buyer_id", referencedColumnName = "id"),
+    @JoinTable(name = "seller_roles", joinColumns = @JoinColumn(name = "seller_id", referencedColumnName = "id"),
             inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles = new ArrayList<>();
 
