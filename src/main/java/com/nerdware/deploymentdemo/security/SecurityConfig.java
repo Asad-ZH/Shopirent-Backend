@@ -61,7 +61,7 @@ public class SecurityConfig {
                 .antMatchers("/api/auth/**").permitAll()
                 .antMatchers("/seller","/seller/**").hasAuthority("SELLER")
                 .antMatchers("/buyer","/buyer/**").hasAuthority("BUYER")
-//                .antMatchers("/", "index", "/css/*", "/js/*", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll()
+                .antMatchers("/", "index", "/css/*", "/js/*", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html", "/swagger-resources/**", "/v2/api-docs", "/webjars/**").permitAll()
 //                .antMatchers(HttpMethod.GET, "/buyer/**").hasRole("SELLER")
 //                .antMatchers(HttpMethod.GET, "/seller/**").hasRole("BUYER")
                 .anyRequest().authenticated()

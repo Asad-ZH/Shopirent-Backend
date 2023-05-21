@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/v1/product")
+@CrossOrigin(origins = "*", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE})
 public class ProductController {
 
     ProductService productService;
@@ -26,13 +27,13 @@ public class ProductController {
         return productService.getAllProducts();
     }
 
-    @GetMapping("/{id}")
-    @PreAuthorize("hasAnyAuthority('Buyer', 'Seller')")
-    public Product getProductById(@RequestParam Long id) {
-        return productService.getProductById(id);
+    @GetMapping("/sellerproducts")
+    @PreAuthorize("hasAnyAuthority('Buyer','Seller')")
+    public List<Product> getAllSellerProducts() {
+        return productService.getAllSellerProducts();
     }
 
-    @PostMapping("/addproduct")
+    @PostMapping("/")
     @PreAuthorize("hasAuthority('Seller')")
     public void addProduct(@RequestBody Product product) {
         System.out.println("Product: " + product);

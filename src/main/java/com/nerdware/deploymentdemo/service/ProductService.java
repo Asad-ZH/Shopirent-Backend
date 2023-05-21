@@ -8,6 +8,7 @@ import com.nerdware.deploymentdemo.repository.ProductRepository;
 import com.nerdware.deploymentdemo.repository.SellerRepository;
 import com.nerdware.deploymentdemo.security.JWTAuthenticationFilter;
 import com.nerdware.deploymentdemo.security.JWTGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -26,8 +27,7 @@ public class ProductService {
     ProductRepository productRepository;
     SellerRepository sellerRepository;
 
-
-
+    @Autowired
     public ProductService(HttpServletRequest request, JWTAuthenticationFilter jwtAuthenticationFilter, JWTGenerator jwtGenerator, BuyerRepository buyerRepository, ProductRepository productRepository, SellerRepository sellerRepository) {
         this.request = request;
         this.jwtAuthenticationFilter = jwtAuthenticationFilter;
@@ -41,8 +41,9 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElseThrow(() -> new IllegalStateException("Product with id " + id + " does not exist"));
+    public List<Product> getAllSellerProducts() {
+        Seller seller = extractSellerIdFromToken();
+        return seller.getProducts();
     }
 
     public void updateProduct(Product product, Long id) {
@@ -62,10 +63,10 @@ public class ProductService {
 
     public void addProductToSeller(Product product) {
         Seller seller = extractSellerIdFromToken();
-            product.setSeller(seller);
-            productRepository.save(product);
-            seller.getProducts().add(product);
-            sellerRepository.save(seller);
+        product.setSeller(seller);
+        productRepository.save(product);
+        seller.getProducts().add(product);
+        sellerRepository.save(seller);
 
     }
 
